@@ -2,10 +2,12 @@ package com.sekolah.siswaservice.Service;
 
 import com.sekolah.siswaservice.Model.Siswa;
 import com.sekolah.siswaservice.Repository.SiswaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SiswaService {
@@ -35,12 +37,16 @@ public class SiswaService {
         return null;
     }
 
-    public boolean deleteSiswa(Long id) {
-        Siswa existingSiswa = getSiswaById(id);
-        if (existingSiswa != null) {
-            siswaRepository.delete(existingSiswa);
-            return true;
+    public Siswa deleteSiswa(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID siswa tidak boleh null.");
         }
-        return false;
+        Optional<Siswa> optionalSiswa = siswaRepository.findById(id);
+        if (optionalSiswa.isPresent()) {
+            siswaRepository.delete(optionalSiswa.get());
+            return optionalSiswa.get();
+        } else {
+            throw new EntityNotFoundException("guru dengan ID " + id + " tidak ditemukan.");
+        }
     }
 }

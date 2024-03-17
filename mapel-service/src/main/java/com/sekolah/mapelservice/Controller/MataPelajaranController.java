@@ -3,6 +3,7 @@ package com.sekolah.mapelservice.Controller;
 import com.sekolah.mapelservice.Model.MataPelajaran;
 import com.sekolah.mapelservice.Service.MataPelajaranService;
 import com.sekolah.mapelservice.Util.BaseResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,14 +68,15 @@ public class MataPelajaranController {
         }
     }
 
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> deleteMataPelajaran(@PathVariable Long id) {
-        boolean result = mataPelajaranService.deleteMataPelajaran(id);
-        if (result) {
-            BaseResponse<Void> response = new BaseResponse<>("success", "Mata pelajaran deleted successfully", null);
-            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
-        } else {
-            BaseResponse<Void> response = new BaseResponse<>("error", "Mata pelajaran not found", null);
+    public ResponseEntity<BaseResponse<MataPelajaran>> deleteMataPelajaran(@PathVariable Long id) {
+        try {
+            MataPelajaran deletedMataPelajatan = mataPelajaranService.deleteMataPelajaran(id);
+            BaseResponse<MataPelajaran> response = new BaseResponse<>("success", "Mata Pelajaran deleted successfully", deletedMataPelajatan);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (EntityNotFoundException ex) {
+            BaseResponse<MataPelajaran> response = new BaseResponse<>("error", ex.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }

@@ -3,6 +3,7 @@ package com.sekolah.siswaservice.Controller;
 import com.sekolah.siswaservice.Model.Siswa;
 import com.sekolah.siswaservice.Service.SiswaService;
 import com.sekolah.siswaservice.Util.BaseResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,20 +77,16 @@ public class SiswaController {
         }
     }
 
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> deleteSiswa(@PathVariable Long id) {
+    public ResponseEntity<BaseResponse<Siswa>> deleteSiswa(@PathVariable Long id) {
         try {
-            boolean result = siswaService.deleteSiswa(id);
-            if (result) {
-                BaseResponse<Void> response = new BaseResponse<>("success", "Siswa deleted successfully", null);
-                return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
-            } else {
-                BaseResponse<Void> response = new BaseResponse<>("error", "Siswa not found", null);
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            BaseResponse<Void> response = new BaseResponse<>("error", "Failed to delete siswa", null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            Siswa deletedSiswa = siswaService.deleteSiswa(id);
+            BaseResponse<Siswa> response = new BaseResponse<>("success", "Guru deleted successfully", deletedSiswa);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (EntityNotFoundException ex) {
+            BaseResponse<Siswa> response = new BaseResponse<>("error", ex.getMessage(), null);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
 

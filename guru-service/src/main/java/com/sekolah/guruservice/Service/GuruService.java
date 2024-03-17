@@ -2,6 +2,7 @@ package com.sekolah.guruservice.Service;
 
 import com.sekolah.guruservice.Model.Guru;
 import com.sekolah.guruservice.Repository.GuruRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,19 +31,23 @@ public class GuruService {
         if (optionalGuru.isPresent()) {
             Guru guru = optionalGuru.get();
             guru.setNama(updatedGuru.getNama());
+            guru.setNip(updatedGuru.getNip());
             return guruRepository.save(guru);
         } else {
             throw new RuntimeException("Guru not found");
         }
     }
 
-    public boolean deleteGuru(Long id) {
+    public Guru deleteGuru(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID guru tidak boleh null.");
+        }
         Optional<Guru> optionalGuru = guruRepository.findById(id);
         if (optionalGuru.isPresent()) {
             guruRepository.delete(optionalGuru.get());
-            return true;
+            return optionalGuru.get();
         } else {
-            return false;
+            throw new EntityNotFoundException("guru dengan ID " + id + " tidak ditemukan.");
         }
     }
 }

@@ -3,6 +3,7 @@ package com.sekolah.kelasservice.Controller;
 import com.sekolah.kelasservice.Model.Kelas;
 import com.sekolah.kelasservice.Service.KelasService;
 import com.sekolah.kelasservice.Util.BaseResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,13 +73,13 @@ public class KelasController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> deleteKelas(@PathVariable Long id) {
-        boolean result = kelasService.deleteKelas(id);
-        if (result) {
-            BaseResponse<Void> response = new BaseResponse<>("success", "Kelas deleted successfully", null);
-            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
-        } else {
-            BaseResponse<Void> response = new BaseResponse<>("error", "Kelas not found", null);
+    public ResponseEntity<BaseResponse<Kelas>> deleteKelas(@PathVariable Long id) {
+        try {
+            Kelas deletedKelas = kelasService.deleteKelas(id);
+            BaseResponse<Kelas> response = new BaseResponse<>("success", "Kelas deleted successfully", deletedKelas);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (EntityNotFoundException ex) {
+            BaseResponse<Kelas> response = new BaseResponse<>("error", ex.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }

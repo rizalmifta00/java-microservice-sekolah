@@ -2,6 +2,7 @@ package com.sekolah.mapelservice.Service;
 
 import com.sekolah.mapelservice.Model.MataPelajaran;
 import com.sekolah.mapelservice.Repository.MataPelajaranRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -42,13 +43,16 @@ public class MataPelajaranService {
         }
     }
 
-    public boolean deleteMataPelajaran(Long id) {
+    public MataPelajaran deleteMataPelajaran(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID Mata Pelajaran tidak boleh null.");
+        }
         Optional<MataPelajaran> optionalMataPelajaran = mataPelajaranRepository.findById(id);
         if (optionalMataPelajaran.isPresent()) {
             mataPelajaranRepository.delete(optionalMataPelajaran.get());
-            return true;
+            return optionalMataPelajaran.get();
         } else {
-            return false;
+            throw new EntityNotFoundException("MataPelajaran dengan ID " + id + " tidak ditemukan.");
         }
     }
 }

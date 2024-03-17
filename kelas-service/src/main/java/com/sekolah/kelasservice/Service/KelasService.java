@@ -2,6 +2,7 @@ package com.sekolah.kelasservice.Service;
 
 import com.sekolah.kelasservice.Model.Kelas;
 import com.sekolah.kelasservice.Repository.KelasRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,13 +40,16 @@ public class KelasService {
         }
     }
 
-    public boolean deleteKelas(Long id) {
+    public Kelas deleteKelas(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("ID kelas tidak boleh null.");
+        }
         Optional<Kelas> optionalKelas = kelasRepository.findById(id);
         if (optionalKelas.isPresent()) {
             kelasRepository.delete(optionalKelas.get());
-            return true;
+            return optionalKelas.get();
         } else {
-            return false;
+            throw new EntityNotFoundException("Kelas dengan ID " + id + " tidak ditemukan.");
         }
     }
 

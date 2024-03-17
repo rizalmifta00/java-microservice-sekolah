@@ -3,6 +3,7 @@ package com.sekolah.guruservice.Controller;
 import com.sekolah.guruservice.Model.Guru;
 import com.sekolah.guruservice.Service.GuruService;
 import com.sekolah.guruservice.Util.BaseResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,13 +57,13 @@ public class GuruController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> deleteGuru(@PathVariable Long id) {
-        boolean result = guruService.deleteGuru(id);
-        if (result) {
-            BaseResponse<Void> response = new BaseResponse<>("success", "Guru deleted successfully", null);
-            return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
-        } else {
-            BaseResponse<Void> response = new BaseResponse<>("error", "Guru not found", null);
+    public ResponseEntity<BaseResponse<Guru>> deleteGuru(@PathVariable Long id) {
+        try {
+            Guru deletedGuru = guruService.deleteGuru(id);
+            BaseResponse<Guru> response = new BaseResponse<>("success", "Guru deleted successfully", deletedGuru);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (EntityNotFoundException ex) {
+            BaseResponse<Guru> response = new BaseResponse<>("error", ex.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
     }
